@@ -1,0 +1,29 @@
+#banner {
+    margin-bottom: 25px;
+}
+
+#pydata-logo {
+    height: 60px;
+    width: auto;
+    margin-bottom: 25px;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333333;
+    font-size: 15px;
+    margin: 0;
+}
+
+#selectors {
+    margin-bottom: 25px;
+}
+
+.crossfilter {
+    background-color: #E1E1E1;
+}
+
+.pretty_container {
+    margin: 25px 0 15px 25px;
+
+}
