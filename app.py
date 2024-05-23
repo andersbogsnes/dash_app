@@ -1,11 +1,12 @@
 import datetime
 
 import dash
-import dash_html_components as html
+from dash import html
 from dash.dependencies import Output, Input
 import plotly.figure_factory as ff
 import controls
 import components
+from db import engine
 
 app = dash.Dash(__name__)
 server = app.server
@@ -63,8 +64,9 @@ def test_slider(offenses_data, shootings_data):
                Input("crossfilter-district-dropdown", "value")])
 def make_num_shootings_graph(input_index, districts_selected):
     start_date, end_date = components.months[input_index[0]], components.months[input_index[1]]
-    result = controls.get_num_shootings_by_year_and_district(start_date, end_date,
-                                                             districts_selected)
+    with engine.connect() as conn:
+        result = controls.get_num_shootings_by_year_and_district(conn, start_date, end_date,
+                                                                 districts_selected)
 
     return components.draw_line(result,
                                 "num_shootings",
@@ -79,9 +81,10 @@ def make_num_shootings_graph(input_index, districts_selected):
 def make_num_offenses_graph(input_index, districts_selected):
     start_date = components.months[input_index[0]]
     end_date = components.months[input_index[1]]
-    result = controls.get_num_offenses_by_year_and_district(start_date,
-                                                            end_date,
-                                                            districts_selected)
+    with engine.connect() as conn:
+        result = controls.get_num_offenses_by_year_and_district(conn, start_date,
+                                                                end_date,
+                                                                districts_selected)
     return components.draw_line(result,
                                 "num_offenses",
                                 title=f"Number of Offenses per Month between "
@@ -95,12 +98,13 @@ def make_num_offenses_graph(input_index, districts_selected):
 def make_top10_group(months_selected, districts_selected):
     start_date = components.months[months_selected[0]]
     end_date = components.months[months_selected[1]]
-    results = controls.get_top10_offense_groups(start_date,
-                                                end_date,
-                                                districts_selected)
+    with engine.connect() as conn:
+        results = controls.get_top10_offense_groups(conn, start_date,
+                                                    end_date,
+                                                    districts_selected)
 
     return components.draw_bar(x="num_offenses",
-                               y="OFFENSE_CODE_GROUP",
+                               y="offense_code_group",
                                results=results[::-1],
                                title="Top 10 Offense Code Groups")
 
@@ -111,8 +115,8 @@ def make_top10_group(months_selected, districts_selected):
 def make_heatmap(selected_months, selected_districts):
     start_date = components.months[selected_months[0]]
     end_date = components.months[selected_months[1]]
-
-    data = controls.get_heatmap_data(start_date, end_date, selected_districts)
+    with engine.connect() as conn:
+        data = controls.get_heatmap_data(conn, start_date, end_date, selected_districts)
     figure = ff.create_annotated_heatmap(data.values,
                                          y=data.index.to_list(),
                                          x=data.columns.to_list(),

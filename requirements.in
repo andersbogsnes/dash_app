@@ -1,5 +1,6 @@
 dash
 sqlalchemy
-psycopg2-binary
+psycopg[binary]
 pandas
 gunicorn
+pydantic-settings

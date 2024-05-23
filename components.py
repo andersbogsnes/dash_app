@@ -1,15 +1,16 @@
 import statistics
 from typing import List
 
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import plotly.graph_objects as go
 import controls
-
+from db import engine
 RED = "#e26855"
 
-months = controls.available_months()
-districts = controls.available_districts()
+with engine.connect() as connection:
+    months = controls.available_months(connection)
+    districts = controls.available_districts(connection)
 
 title = html.Div(html.H1("Hello Pydata Copenhagen!"), className="one-half column", id="title")
 
